@@ -1,16 +1,42 @@
-# This is a sample Python script.
+import os
+import requests
+import pprint
+import urllib3
+import urllib
+import urllib.request
+from libgen_api import LibgenSearch
+import json
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+URL = ("https://libgen.li/")
+Input = input("Please enter the title of the book you want.\n")
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def response_codes():
+    search_results = requests.get(URL, verify=False)
+    response_code = search_results.status_code
+
+    if response_code != 200:
+        print("Error Code : ")
+        print(response_code)
+    else:
+        print("Response code : 200 , Status : A- Okay ")
+        filters()
+    return search_results
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def filters():  # function to get imfo from library genesis
+    results1 = LibgenSearch()
+    title_filters = {"Extension": "pdf", "Language": "English"}
+    titles = results1.search_title_filtered(Input, title_filters, exact_match=True)
+    # print(formatted_titles)
+    item_to_download = titles[0]
+    download_links = results1.resolve_download_links(item_to_download)
+    formatted_download_links = json.dumps(download_links, sort_keys=True, indent=4)
+    print(formatted_download_links)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+
+print(os.getcwd())
+response_codes()
+
+
